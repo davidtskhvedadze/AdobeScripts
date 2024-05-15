@@ -18,6 +18,7 @@ $.writeln(motionComponent.displayName);
 var xmpBlob = clip.projectItem.getProjectMetadata();
 
 
+
 // Extract the dimensions from the XMP metadata
 var dimensionsMatch = xmpBlob.match(/<premierePrivateProjectMetaData:Column\.Intrinsic\.VideoInfo>(.*?)<\/premierePrivateProjectMetaData:Column\.Intrinsic\.VideoInfo>/);
 
