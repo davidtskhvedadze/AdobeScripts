@@ -1,0 +1,30 @@
+// addKey(time): Adds a keyframe to the component parameter stream, at the specified time.
+// areKeyframesSupported(): Checks if keyframes are supported for this component parameter.
+// findNearestKey(timeToCheck, threshold): Finds the nearest keyframe to the provided time within a certain threshold.
+// findNextKey(timeToCheck): Returns the keyframe temporally subsequent to the provided time.
+// findPreviousKey(timeToCheck): Returns the keyframe temporally previous to the provided time.
+// getColorValue(): Obtains the value of the component parameter stream.
+// getKeys(): Returns an array of all keyframes on the component parameter.
+// getValue(): Obtains the value of the component parameter stream.
+// getValueAtKey(time): Retrieves the value of the component parameter stream, at the specified keyframe time.
+// getValueAtTime(time): Retrieves the value of the component parameter stream, at the specified time.
+// isTimeVarying(): Checks if the component parameter varies over time.
+// removeKey(time): Removes a keyframe on the component parameter stream, at the specified time.
+// removeKeyRange(startTime, endTime): Removes all keyframes from the component parameter stream, between the specified times.
+// setColorValue(alpha, red, green, blue, updateUI): Sets the values within a component parameter stream, representing a Color.
+// setInterpolationTypeAtKey(time, interpretationType): Specifies the interpolation type to be assigned to the keyframe, at the specified time.
+// setTimeVarying(varying): Sets whether the component parameter varies, over time.
+// setValue(value, updateUI): Sets the value of the component parameter stream.
+// setValueAtKey(time, value, updateUI): Sets the value of the component parameter stream, at the specified keyframe time.
+
+
+//HOW TO INCLUDE FILES in ExtendScript
+// In file1.jsx
+// function myFunction() {
+    // Do something
+// }
+
+// In file2.jsx
+// #include "file1.jsx"
+
+// myFunction();
