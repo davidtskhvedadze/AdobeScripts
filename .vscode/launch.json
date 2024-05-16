@@ -14,7 +14,7 @@
             "type": "extendscript-debug",
             "request": "launch",
             "name": "Launch Script in ExtendScript Engine",
-            "script": "${workspaceFolder}/Movement.jsx"
+            "script": "${workspaceFolder}/MatchPoints.jsx"
             
         }
     ]
