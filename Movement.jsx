@@ -1,11 +1,3 @@
-var project = app.project;
-var projectItem = project.rootItem;
-
-var activeSequence = project.activeSequence;
-
-var videoTracks = activeSequence.videoTracks;
-
-var trackOne = videoTracks[0];
 var movementTypes = [
     "Zoom in",
     "Zoom out",
@@ -15,112 +7,199 @@ var movementTypes = [
     "Pan down"
 ];
 
+function getTrack(index) {
+    var project = app.project;
+    var projectItem = project.rootItem;
+    var activeSequence = project.activeSequence;
+    var videoTracks = activeSequence.videoTracks;
+    return videoTracks[index];
+}
+
+function getComponents(clip) {
+    var components = clip.components;
+    if (components.length === 3) {
+        return {
+            positionComponentSplit: components[1].properties[0],
+            scaleComponentSplit: components[1].properties[1],
+            leftCropComponent: components[2].properties[0],
+            rightCropComponent: components[2].properties[2],
+        };
+    }
+    return {
+        positionComponent: components[1].properties[0],
+        scaleComponent: components[1].properties[1]
+    };
+}
+
+function setComponentsTimeVarying(components) {
+    if(!components.positionComponentSplit) {
+    var positionComponent = components.positionComponent;
+    var scaleComponent = components.scaleComponent;
+    positionComponent.setTimeVarying(true);
+    scaleComponent.setTimeVarying(true);
+    }
+    var positionComponentSplit = components.positionComponentSplit;
+    var scaleComponentSplit = components.scaleComponentSplit;
+    positionComponentSplit.setTimeVarying(true);
+    scaleComponentSplit.setTimeVarying(true);
+
+    if(components.leftCropComponent && components.rightCropComponent) {
+        components.leftCropComponent.setTimeVarying(true);
+        components.rightCropComponent.setTimeVarying(true);
+    }
+}
+
+function getScaleFactor(clip) {
+    var projectData = clip.projectItem.getProjectMetadata();
+    var dimensionsMatch = projectData.match(/<premierePrivateProjectMetaData:Column\.Intrinsic\.VideoInfo>(.*?)<\/premierePrivateProjectMetaData:Column\.Intrinsic\.VideoInfo>/);
+    if (dimensionsMatch) {
+        var dimensionsString = dimensionsMatch[1].match(/\d+ x \d+/);
+        if (dimensionsString) {
+            var dimensions = dimensionsString[0].split(' x ');
+            var originalWidth = parseInt(dimensions[0]);
+            var originalHeight = parseInt(dimensions[1]);
+            var targetWidth = 1920;
+            var targetHeight = 1080;
+            var scaleFactorWidth = targetWidth / originalWidth;
+            var scaleFactorHeight = targetHeight / originalHeight;
+            return Math.max(scaleFactorWidth, scaleFactorHeight);
+        }
+    }
+    return 1;
+}
+
+var splitRunCount = 0;
+
+function splitScreen(clip1, clip2) {
+    var components1 = getComponents(clip1);
+    var components2 = getComponents(clip2);
+    
+    setComponentsTimeVarying(components1);
+    setComponentsTimeVarying(components2);
+
+    var scaleFactor1 = getScaleFactor(clip1);
+    var scaleFactor2 = getScaleFactor(clip2);
+    var setScale1 = scaleFactor1 * 100;
+    var setScale2 = scaleFactor2 * 100;
+    components1.scaleComponentSplit.setValue(setScale1);
+    components1.rightCropComponent.setValue(25);
+    components2.scaleComponentSplit.setValue(setScale2);
+    components2.leftCropComponent.setValue(25);
+
+    var leftPosition = [0.25, 0.5];
+    var rightPosition = [0.75, 0.5];
+
+    var positionComponent1 = components1.positionComponentSplit;
+    var positionComponent2 = components2.positionComponentSplit;
+
+    positionComponent1.addKey(clip1.inPoint.seconds);
+    positionComponent1.setValueAtKey(clip1.inPoint.seconds, leftPosition);
+
+    positionComponent1.addKey(clip1.outPoint.seconds);
+
+
+    positionComponent2.addKey(clip2.inPoint.seconds);
+    positionComponent2.setValueAtKey(clip2.inPoint.seconds, rightPosition);
+
+    positionComponent2.addKey(clip2.outPoint.seconds);
+
+    if(splitRunCount % 2 === 0) {
+
+        positionComponent1.setValueAtKey(clip1.outPoint.seconds, [leftPosition[0], leftPosition[1] - 0.06]);
+
+        positionComponent2.setValueAtKey(clip2.outPoint.seconds, [rightPosition[0], rightPosition[1] + 0.06]);
+
+    } else {
+
+        positionComponent1.setValueAtKey(clip1.outPoint.seconds, [leftPosition[0], leftPosition[1] + 0.06]);
+
+        positionComponent2.setValueAtKey(clip2.outPoint.seconds, [rightPosition[0], rightPosition[1] - 0.06]);
+    }
+    splitRunCount++;
+}
 var movementIndex = 0;
-
-var clip = trackOne.clips[0];
-
-// var clipItem = clip.projectItem;
-
-// videoTracks[1].insertClip(clipItem, clip.start.ticks, 1);
-
-//if tracktwo has a line asset at a certain time, do split screen is my goal
-//create a new function split and include it here whenever the two is true USE CLIP INPOINT CHECK BELOW
+var trackOne = getTrack(0);
+var trackTwo = getTrack(1);
+var trackThree = getTrack(2);
 
 for(var i = 0; i < trackOne.clips.length; i++) {
-  // Get the clip
-  var clip = trackOne.clips[i];
-  var components = clip.components;
-  var scaleComponent = components[1].properties[1];
-  var positionComponent = components[1].properties[0];
+    var clipTrackOne = trackOne.clips[i];
+    var currentTime = clipTrackOne.start.seconds;
+    var found = false;
 
-  // Get the project metadata
-  var projectData = clip.projectItem.getProjectMetadata();
-
-  // Extract the dimensions from the project metadata
-  var dimensionsMatch = projectData.match(/<premierePrivateProjectMetaData:Column\.Intrinsic\.VideoInfo>(.*?)<\/premierePrivateProjectMetaData:Column\.Intrinsic\.VideoInfo>/);
-  
-  var dimensionsString = dimensionsMatch[1].match(/\d+ x \d+/);
-
-    if (dimensionsString) {
-        // Extract the part that contains the dimensions
-        var dimensions = dimensionsString[0].split(' x ');
-        var originalWidth = parseInt(dimensions[0]);
-        var originalHeight = parseInt(dimensions[1]);
-
-        // Set the target dimensions
-        var targetWidth = 1920;
-        var targetHeight = 1080;
-
-        // Calculate the scale factors
-        var scaleFactorWidth = targetWidth / originalWidth;
-        var scaleFactorHeight = targetHeight / originalHeight;
-
-        // Use the larger scale factor to ensure that at least one dimension is not larger than the target size
-        var scaleFactor = Math.max(scaleFactorWidth, scaleFactorHeight);
-
-        // Set the scale at the start and end of the clip
-        scaleComponent.setTimeVarying(true);
-        positionComponent.setTimeVarying(true);
-
-        // Set the scale at the start of the clip
-        var setScale = scaleFactor * 100; 
-        scaleComponent.setValue(setScale);
-
-        //Center the position of the clip
-        var centerPosition = [originalWidth / 2 / originalWidth, originalHeight / 2 / originalHeight]; 
-        positionComponent.setValue(centerPosition);
-
-        // Set the movement type
-        var currentMovementType = movementTypes[movementIndex % movementTypes.length];
-
-        switch (currentMovementType) {
-            case "Zoom in":
-                scaleComponent.addKey(clip.inPoint.seconds);
-                scaleComponent.addKey(clip.inPoint.seconds + clip.end.seconds);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds, setScale);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds + clip.end.seconds, setScale + 5);
-                break;
-            case "Zoom out":
-                scaleComponent.addKey(clip.inPoint.seconds);
-                scaleComponent.addKey(clip.inPoint.seconds + clip.end.seconds);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds, setScale + 5);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds + clip.end.seconds, setScale);
-                break;
-            case "Pan left":
-                scaleComponent.addKey(clip.inPoint.seconds);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds, setScale + 3);
-                positionComponent.addKey(clip.inPoint.seconds);
-                positionComponent.addKey(clip.inPoint.seconds + clip.end.seconds);
-                positionComponent.setValueAtKey(clip.inPoint.seconds, centerPosition);
-                positionComponent.setValueAtKey(clip.inPoint.seconds + clip.end.seconds, [centerPosition[0] - 0.1, centerPosition[1]]);
-                break;
-            case "Pan right":
-                scaleComponent.addKey(clip.inPoint.seconds);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds, setScale + 3);
-                positionComponent.addKey(clip.inPoint.seconds);
-                positionComponent.addKey(clip.inPoint.seconds + clip.end.seconds);
-                positionComponent.setValueAtKey(clip.inPoint.seconds, centerPosition);
-                positionComponent.setValueAtKey(clip.inPoint.seconds + clip.end.seconds, [centerPosition[0] + 0.1, centerPosition[1]]);
-                break;
-            case "Pan up":
-                scaleComponent.addKey(clip.inPoint.seconds);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds, setScale + 3);
-                positionComponent.addKey(clip.inPoint.seconds);
-                positionComponent.addKey(clip.inPoint.seconds + clip.end.seconds);
-                positionComponent.setValueAtKey(clip.inPoint.seconds, centerPosition);
-                positionComponent.setValueAtKey(clip.inPoint.seconds + clip.end.seconds, [centerPosition[0], centerPosition[1] - 0.1]);
-                break;
-            case "Pan down":
-                scaleComponent.addKey(clip.inPoint.seconds);
-                scaleComponent.setValueAtKey(clip.inPoint.seconds, setScale + 3);
-                positionComponent.addKey(clip.inPoint.seconds);
-                positionComponent.addKey(clip.inPoint.seconds + clip.end.seconds);
-                positionComponent.setValueAtKey(clip.inPoint.seconds, centerPosition);
-                positionComponent.setValueAtKey(clip.inPoint.seconds + clip.end.seconds, [centerPosition[0], centerPosition[1] + 0.1]);
-                break;
+    for(var j = 0; j < trackThree.clips.length; j++) {
+        var foundLine = trackThree.clips[j];
+        var clip1 = trackOne.clips[i];
+        if(currentTime === foundLine.start.seconds && foundLine.name === "LINE.mov") {
+            var clip2 = trackTwo.clips[j];
+            splitScreen(clip1, clip2);
+            found = true;
+            break;
         }
-            movementIndex++;
-    } else {
-        alert("Error: Could not extract dimensions from the project metadata.");
     }
+    if (found) {
+        continue;
+    }
+
+    var components = getComponents(clipTrackOne);
+    var positionComponent = components.positionComponent;
+    var scaleComponent = components.scaleComponent;
+    var scaleFactor = getScaleFactor(clipTrackOne);
+    scaleComponent.setTimeVarying(true);
+    positionComponent.setTimeVarying(true);
+    var setScale = scaleFactor * 100; 
+    scaleComponent.setValue(setScale);
+    var centerPosition = [0.5, 0.5]; 
+    positionComponent.setValue(centerPosition);
+
+    var currentMovementType = movementTypes[movementIndex % movementTypes.length];
+    var movementFunctions = {
+        "Zoom in": function() {
+            scaleComponent.addKey(clipTrackOne.inPoint.seconds);
+            scaleComponent.addKey(clipTrackOne.outPoint.seconds );
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale);
+            scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds, setScale + 5);
+        },
+        "Zoom out": function() {
+            scaleComponent.addKey(clipTrackOne.inPoint.seconds);
+            scaleComponent.addKey(clipTrackOne.outPoint.seconds);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 5);
+            scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds , setScale);
+        },
+        "Pan left": function() {
+            scaleComponent.addKey(clipTrackOne.inPoint.seconds);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 3);
+            positionComponent.addKey(clipTrackOne.inPoint.seconds);
+            positionComponent.addKey(clipTrackOne.outPoint.seconds );
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, centerPosition);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds , [centerPosition[0] - 0.04, centerPosition[1]]);
+        },
+        "Pan right": function() {
+            scaleComponent.addKey(clipTrackOne.inPoint.seconds);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 3);
+            positionComponent.addKey(clipTrackOne.inPoint.seconds);
+            positionComponent.addKey(clipTrackOne.outPoint.seconds );
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, centerPosition);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds , [centerPosition[0] + 0.04, centerPosition[1]]);
+        },
+        "Pan up": function() {
+            scaleComponent.addKey(clipTrackOne.inPoint.seconds);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 3);
+            positionComponent.addKey(clipTrackOne.inPoint.seconds);
+            positionComponent.addKey(clipTrackOne.outPoint.seconds);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, centerPosition);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [centerPosition[0], centerPosition[1] - 0.04]);
+        },
+        "Pan down": function() {
+            scaleComponent.addKey(clipTrackOne.inPoint.seconds);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 3);
+            positionComponent.addKey(clipTrackOne.inPoint.seconds);
+            positionComponent.addKey(clipTrackOne.outPoint.seconds);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, centerPosition);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [centerPosition[0], centerPosition[1] + 0.02]);
+        },
+    };
+
+    movementFunctions[currentMovementType]();
+    movementIndex++;
 }
