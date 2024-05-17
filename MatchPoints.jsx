@@ -4,15 +4,13 @@ var activeSequence = project.activeSequence;
 var videoTracks = activeSequence.videoTracks;
 var markers = activeSequence.markers;
 
-var videoTrackOne = videoTracks[0];
-var captionTrack = videoTracks[5];
+var videoOne = videoTracks[0];
 
 var frameRate = 29.97; 
 var frameTime = 1 / frameRate;
 
-for(var i = 0; i < videoTrackOne.clips.length; i++) {
-    var captionClip = captionTrack.clips[i];
-    var videoClip = videoTrackOne.clips[i];
+for(var i = 0; i < videoOne.clips.length; i++) {
+    var videoClip = videoOne.clips[i];
 
     if (videoClip && i < markers.numMarkers - 1) {
         var startTime = markers[i].start.seconds;
