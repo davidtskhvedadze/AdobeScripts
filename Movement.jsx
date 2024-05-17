@@ -124,12 +124,14 @@ var trackThree = getTrack(2);
 
 for(var i = 0; i < trackOne.clips.length; i++) {
     var clipTrackOne = trackOne.clips[i];
-    var currentTime = clipTrackOne.start.seconds;
+    var currentTime = parseFloat(clipTrackOne.start.seconds.toFixed(4));
     var found = false;
 
     for(var j = 0; j < trackThree.clips.length; j++) {
         var foundLine = trackThree.clips[j];
         var clip1 = trackOne.clips[i];
+        $.writeln("Current time: " + currentTime + " Found line start: " + foundLine.start.seconds);
+
         if(currentTime === foundLine.start.seconds && foundLine.name === "LINE.mov") {
             var clip2 = trackTwo.clips[j];
             splitScreen(clip1, clip2);
