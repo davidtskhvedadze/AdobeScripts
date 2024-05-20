@@ -154,54 +154,51 @@ for(var i = 0; i < trackOne.clips.length; i++) {
     var centerPosition = [0.5, 0.55]; 
     positionComponent.setValue(centerPosition);
 
-    var duration = clipTrackOne.outPoint.seconds - clipTrackOne.inPoint.seconds;
-    var multiplier = duration > 5 ? 2 : 1;
-
     var currentMovementType = movementTypes[movementIndex % movementTypes.length];
     var movementFunctions = {
         "Zoom in": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
             scaleComponent.addKey(clipTrackOne.outPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale * multiplier);
-            scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds, (setScale + 5) * multiplier);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.secon);
+            scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds, setScale + 5);
         },
         "Zoom out": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
             scaleComponent.addKey(clipTrackOne.outPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, (setScale + 5) * multiplier);
-            scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds, setScale * multiplier);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 5);
+            scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds, setScale );
         },
         "Pan left": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, (setScale + 10) * multiplier);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 10);
             positionComponent.addKey(clipTrackOne.inPoint.seconds);
             positionComponent.addKey(clipTrackOne.outPoint.seconds);
-            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] + 0.04 * multiplier), (centerPosition[1] - 0.04 * multiplier)]);
-            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] - 0.04 * multiplier), (centerPosition[1] - 0.04 * multiplier)]);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] + 0.04 * multiplier), (centerPosition[1] - 0.04 )]);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] - 0.04 * multiplier), (centerPosition[1] - 0.04)]);
         },
         "Pan right": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, (setScale + 10) * multiplier);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 10);
             positionComponent.addKey(clipTrackOne.inPoint.seconds);
             positionComponent.addKey(clipTrackOne.outPoint.seconds);
-            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] - 0.04 * multiplier), (centerPosition[1] - 0.04 * multiplier)]);
-            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] + 0.04 * multiplier), (centerPosition[1] - 0.04 * multiplier)]);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] - 0.04 * multiplier), (centerPosition[1] - 0.04)]);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] + 0.04 * multiplier), (centerPosition[1] - 0.04)]);
         },
         "Pan up": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, (setScale + 10) * multiplier);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 10);
             positionComponent.addKey(clipTrackOne.inPoint.seconds);
             positionComponent.addKey(clipTrackOne.outPoint.seconds);
-            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [centerPosition[0], (centerPosition[1] + 0.04 * multiplier)]);
-            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [centerPosition[0], (centerPosition[1] - 0.04 * multiplier)]);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [centerPosition[0], (centerPosition[1] + 0.04)]);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [centerPosition[0], (centerPosition[1] - 0.04)]);
         },
         "Pan down": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, (setScale + 5) * multiplier);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 5);
             positionComponent.addKey(clipTrackOne.inPoint.seconds);
             positionComponent.addKey(clipTrackOne.outPoint.seconds);
-            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [centerPosition[0], (centerPosition[1] - 0.04 * multiplier)]);
-            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [centerPosition[0], (centerPosition[1] + 0.04 * multiplier)]);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [centerPosition[0], (centerPosition[1] - 0.04)]);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [centerPosition[0], (centerPosition[1] + 0.04)]);
         },
     };
 
