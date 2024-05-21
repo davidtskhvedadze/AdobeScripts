@@ -159,7 +159,7 @@ for(var i = 0; i < trackOne.clips.length; i++) {
         "Zoom in": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
             scaleComponent.addKey(clipTrackOne.outPoint.seconds);
-            scaleComponent.setValueAtKey(clipTrackOne.inPoint.secon);
+            scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds);
             scaleComponent.setValueAtKey(clipTrackOne.outPoint.seconds, setScale + 5);
         },
         "Zoom out": function() {
@@ -173,16 +173,16 @@ for(var i = 0; i < trackOne.clips.length; i++) {
             scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 10);
             positionComponent.addKey(clipTrackOne.inPoint.seconds);
             positionComponent.addKey(clipTrackOne.outPoint.seconds);
-            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] + 0.04 * multiplier), (centerPosition[1] - 0.04 )]);
-            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] - 0.04 * multiplier), (centerPosition[1] - 0.04)]);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [centerPosition[0] + 0.04, (centerPosition[1] - 0.04 )]);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] - 0.04), (centerPosition[1] - 0.04)]);
         },
         "Pan right": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
             scaleComponent.setValueAtKey(clipTrackOne.inPoint.seconds, setScale + 10);
             positionComponent.addKey(clipTrackOne.inPoint.seconds);
             positionComponent.addKey(clipTrackOne.outPoint.seconds);
-            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] - 0.04 * multiplier), (centerPosition[1] - 0.04)]);
-            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] + 0.04 * multiplier), (centerPosition[1] - 0.04)]);
+            positionComponent.setValueAtKey(clipTrackOne.inPoint.seconds, [(centerPosition[0] - 0.04), (centerPosition[1] - 0.04)]);
+            positionComponent.setValueAtKey(clipTrackOne.outPoint.seconds, [(centerPosition[0] + 0.04), (centerPosition[1] - 0.04)]);
         },
         "Pan up": function() {
             scaleComponent.addKey(clipTrackOne.inPoint.seconds);
