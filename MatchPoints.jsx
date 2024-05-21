@@ -14,11 +14,11 @@ for(var i = 0; i < videoOne.clips.length; i++) {
 
     if (videoClip && i < markers.numMarkers - 1) {
         var startTime = markers[i].start.seconds;
-        if (i != 0) {
-            startTime += 2 * frameTime; 
-        }
+        // if (i != 0) {
+        //     startTime += 2 * frameTime; 
+        // }
         videoClip.start = startTime;
-        var endTime = markers[i + 1].start.seconds + 2 * frameTime;
+        var endTime = markers[i + 1].start.seconds;
         videoClip.end = endTime;
     }
 }
